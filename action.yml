@@ -1,0 +1,37 @@
+name: 'Build wheel using CIBuildWheel'
+description: 'Reusable CIBuildWheel action for a hybrid Python project using HDF5 and needing numpy for tests'
+inputs:
+  platform:
+    required: true
+    description: The, e.g., platform to target
+  arch:
+    required: true
+    description: The targeted architecture
+  python-version:
+    required: true
+    description: The Python version to use
+  cmake-type:
+    required: true
+    description: The build type target, sets CMAKE_BUILD_TYPE
+
+runs:
+  using: "composite"
+  steps:
+      -
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      -
+        name: Build wheel
+        uses: pypa/cibuildwheel@v2.6.1
+        env:
+          CIBW_BUILD: ${{ inputs.python-version }}-${{ inputs.platform }}*
+          CIBW_ARCHS: ${{ inputs.arch }}
+          CIBW_BEFORE_ALL_LINUX: yum install -y hdf5-devel
+          CIBW_BEFORE_TEST: python -m pip install numpy
+          CIBW_TEST_COMMAND: python -m unittest discover -s {project}/wrap/tests
+      -
+        uses: actions/upload-artifact@v2
+        with:
+          name: "${{ inputs.python-version }}-${{ inputs.platform }}_${{ inputs.arch }}"
+          path: ./wheelhouse/*.whl
