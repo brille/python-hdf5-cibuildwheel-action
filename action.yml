@@ -21,6 +21,7 @@ runs:
       -
         name: Determine hdf5 installation command
         id: hdf5
+        shell: bash
         run: |
           if [[ "${{ inputs.platform }}" == "manylinux" ]]; then
             echo "::set-output name=command::yum install -y hdf5-devel"
