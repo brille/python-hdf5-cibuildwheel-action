@@ -10,9 +10,6 @@ inputs:
   python-version:
     required: true
     description: The Python version to use
-  cmake-type:
-    required: true
-    description: The build type target, sets CMAKE_BUILD_TYPE
 
 runs:
   using: "composite"
